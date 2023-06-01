@@ -68,10 +68,10 @@ This pipeline use Airflow on a Docker container for orchestration. The specific 
 ## Transformation
 The project use Google Cloud BigQuery for all `prep` transformation. The data modeling follow a star schema, with a *denormalized* "fact" table, rather then *normalized* dimension tables. The star schema supports analytical queries better for it allows the use of running simpler queries because the limited number of joins. It also performs faster aggregations that improve the query performance.  
 
-![Star schema made in Lucid Chart](https://github.com/blktheta/spotify-image/images/star-schema.png "Denormalized star schema")
+![Star schema made in Lucid Chart](https://github.com/blktheta/spotify-image/blob/248b34dee8a0417c64ca91800276bc251f42e272/images/star-schema.png "Denormalized star schema")
 
 ### Nested and Repeated Structures
-BigQuery natively support for *nested* and *repeated* structures in JSON or AVRO input data. Records can therefore be expressed more naturally, for more information see the documentation at [Google](https://cloud.google.com/bigquery/docs/nested-repeated). For now the thing to remember is two fold:
+BigQuery natively supports *nested* and *repeated* structures in JSON or AVRO input data, records can therefore be expressed more naturally. For more information see the documentation at [Google](https://cloud.google.com/bigquery/docs/nested-repeated). For now the thing to remember is two fold:
 1. BigQuery automatically flattens nested fields when querying.
 2. BigQuery automatically groups data by "row" when querying one or more repeated fiels.
 
