@@ -1,4 +1,4 @@
-# On this page
+## On this page
 * [Purpose](#purpose)
 * [Scope](#scope)
 * [Infrastructure](#infrastructure)
@@ -30,14 +30,14 @@
 | :--- | 
 | This project is meant for cloud development. It acts as a proof of concept for what can be done with the Spotify Web API. The configuration supports basic configuration using environment variables or an .env file. Feel free to modify this project to suit your needs. |
 
-# Purpose
+## Purpose
 The goal of this project is to highlight the songs that Spotify recommend in their official playlists and what character said songs possess. The data will help upcoming artist understand the Spotify market audience and better target their efforts. This project also conceptually describes on high level the componenents which all together are defined as an ELT data pipeline.  
 
-# Scope
+## Scope
 The project is limited to a weeks worth of data (~30 million rows of data) for brevity. The DAG however should return ~1.5 billion rows of data annually. This document is limited to describe the pipeline conceptually, as there are other resources that describe it in more detail.
 
-# Infrastructure
-## The Data Stack
+## Infrastructure
+### The Data Stack
 ![Data stack made in Canva](https://github.com/blktheta/spotify-image/blob/1aa20965f2e2fd54cbc9b05d2f72e2b22e545cb7/images/data-stack.png "ELT data stack")
 
 The project use Terraform to manage cloud resources. The data model is diagrammed in Lucid Chart and the dashboard in Looker Studio. The extraction, loading and transformation part of the stack is all overseen by Ariflow. 
@@ -53,27 +53,27 @@ The project use Terraform to manage cloud resources. The data model is diagramme
 | Transformations | Google Cloud BigQuery |
 | Data Visualization | Google Cloud Looker |
 
-## Extrack and Load
+### Extrack and Load
 The project use custom made pipeline built in `Python 3.10` and orchestrated in `Airflow 2.5.3` run in a `Docker` container. This ELT pipeline requires the owner to be responsible for building, maintaining, or orchestrating the movement of data from the data source into the data warehouse.
 
-### Data Source
+#### Data Source
 The RAW data loaded into the data warehouse comes from the [Spotify Web API](https://developer.spotify.com/documentation/web-api). The data runs though an Airflow pipeline and is stored raw in Google Cloud Storage. The *Replication Frequency* (RF) is set to 24h and *Service Level Objective* (SLO) to 3 hours. The numbers may change if Spotify updates their rate limits in near future. 
 
-## Orchestration
+### Orchestration
 This pipeline use Airflow on a Docker container for orchestration. The specific setup can be found in the `docker-compose.yaml` file. It is based on the offical `docker-compose.yaml` file fetched from the Airflow documentation [here](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html). 
 
-## Data Warehouse
+### Data Warehouse
 The project use Google Cloud Storage as data warehouse. Its seamless integration with other GC features and the 90 days trial makes it a great contendor for smaller projects.
 
-### Data Storage
+#### Data Storage
 The project use two primary databases `raw` and `prep`, a third `prod` database could be used to further transform and model the data for business use. The `raw` database is where data is first loaded into Cloud Storage; the `prep` database is controlled by BigQuery and is for data that is ready for analysis. 
 
-## Transformation
+### Transformation
 The project use Google Cloud BigQuery for all `prep` transformation. The data modeling follow a star schema, with a *denormalized* "fact" table, rather then *normalized* dimension tables. The star schema supports analytical queries better for it allows the use of running simpler queries because the limited number of joins. It also performs faster aggregations that improve the query performance.  
 
 ![Star schema made in Lucid Chart](https://github.com/blktheta/spotify-image/blob/248b34dee8a0417c64ca91800276bc251f42e272/images/star-schema.png "Denormalized star schema")
 
-### Nested and Repeated Structures
+#### Nested and Repeated Structures
 BigQuery natively supports *nested* and *repeated* structures in JSON or AVRO input data, records can therefore be expressed more naturally. For more information see the documentation at [Google](https://cloud.google.com/bigquery/docs/nested-repeated). For now the thing to remember is two fold:
 1. BigQuery automatically flattens nested fields when querying.
 2. BigQuery automatically groups data by "row" when querying one or more repeated fiels.
@@ -100,13 +100,13 @@ Putting it all together we arrive at an alternative representation of the initia
 |  |  |  | Soundtracks | Photo of My Mind | Song Ga In | ... |
 | 2023-05-24 | Africa | Nigeria | Hot Hits Naija | It's Plenty | Burna Boy | ... |
 
-## Visuallization
+### Visuallization
 The project use Google Cloud Looker Studio as a data visualization tool. A sample report is appended to the project to showcase the simple usage of the `prep` data. 
 
-# Python Guide
+## Python Guide
 The project is written exclusively in Python, except a SQL query, and runs in an isolated Docker container. Make sure to properly edit the values in the code and familiarize yourself with the tools being used.
 
-## Prerequisites
+### Prerequisites
 Before you begin editing the code, you should have following technologies installed and working. Links to proper documentation is included. It is recommended to have atleast done the official tutorials before continuing.
 
 | Tool | Resource |
@@ -118,9 +118,9 @@ Before you begin editing the code, you should have following technologies instal
 | Terraform | [GCP Get Started](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started) |
 | Spotify | [Web API](https://developer.spotify.com/documentation/web-api)
 
-## Variables
+### Variables
 Following snippets showcase some variables needed in order for the DAG to run sucessfully.
-```
+```env
 # Google
 GOOGLE_APPLICATION_CREDENTIALS="/path/to/google/credentials/json"
 ...
@@ -130,9 +130,9 @@ SPOTIFY_AF_ID="your-app-client-id"
 SPOTIFY_AF_SECRET="your-app-client-secret"
 ...
 ```
-The `.env` requires access to your GCP credentials and Spotify Apps ID and key. The GC credntials allow for access into cloud applications from a and lets you call Client libraries such as `Cloud Storage` and `BigQuery`. An example snippet showcased below.
+The `.env` requires access to your GCP credentials and Spotify Apps ID and key. The Google Cloud credntials allow for access into cloud applications and lets you call client libraries such as `Cloud Storage` and `BigQuery`. While the Sptofy App IDs and keys allows for requesting an access token in order to establish a server-to-server connection with Spotify's API. An example snippet of using the `Cloud Storage` client is showcased below. Variables in need of developer input is documented in the code for easier localization.
 
-```
+```python
 import pandas as pd
 from google.cloud import storage
 
@@ -159,9 +159,8 @@ def load_to_storage(df: pd.DataFrame, country: str, date: str) -> None:
     )
     return
 ```
-Variables in need of developer input is documented in the code for easier localization, but also a reminder.
 
-## Tasks
+### Tasks
 The Project runs a single DAG instance daily and is intitially divided into 4 `upstream` tasks (1 task per region). The `upstream` tasks extract the data from the Spotify Web API, when they finish the following `downstream` tasks complete the dag by loading the data into the cloud. The `downstream` rely on the upstream to complete before loading the data into Cloud Storage and then BigQuery.
 ![DAG graph made with Lucid Chart](https://github.com/blktheta/spotify-image/blob/925acccfed0f728a93b6ab2613b7fa7721f509ce/images/dag-graph.png "Airflow DAG graph")
 
