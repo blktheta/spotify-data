@@ -37,35 +37,38 @@ The goal of this project is to highlight the songs that Spotify recommend in the
 The project is limited to a weeks worth of data (~30 million rows of data) for brevity. The DAG however should return ~1.5 billion rows of data annually. This document is limited to describe the pipeline conceptually, as there are other resources that describe it in more detail.
 
 # Infrastructure
-## The Data Stack
-[img of the data stack]
+## &#x2263; The Data Stack
+![Data stack made in Canva](https://github.com/blktheta/spotify-image/images/data-stack.png "ELT data stack")
 
 The project use Terraform to manage cloud resources. The data model is diagrammed in Lucid Chart and the dashboard in Looker Studio. The extraction, loading and transformation part of the stack is all overseen by Ariflow. 
 
 | Stage | Tools |
 | :--- | :---: |
 | Infrastructure | Terraform |
-| Diagramming | Lucid Chart |
+| Diagramming | Lucid Chart & Canva |
 | Extraction | Python Code |
 | Loading | Python Code |
-| Orchestration | Airflow |
+| Orchestration | Airflow & Docker |
 | Data Warehouse | Google Cloud Storage |
 | Transformations | Google Cloud BigQuery |
 | Data Visualization | Google Cloud Looker |
 
-## Extrack and Load
-The project use custom made pipeline built in Python (link) and orchestrated in Airflow (link). This ELT pipeline requires the owner to be responsible for building, maintaining, or orchestrating the movement of data from the data source into the data warehouse.
+## &#x21C4; Extrack and Load
+The project use custom made pipeline built in `Python 3.10` and orchestrated in `Airflow 2.5.3` run in a `Docker` container. This ELT pipeline requires the owner to be responsible for building, maintaining, or orchestrating the movement of data from the data source into the data warehouse.
 
 ### Data Source
+The RAW data loaded into the data warehouse comes from the [Spotify Web API](https://developer.spotify.com/documentation/web-api). The data runs though an Airflow pipeline and is stored raw in Google Cloud Storage. The *Replication Frequency* (RF) is set to 24h and *Service Level Objective* (SLO) to 3 hours. The numbers may change if Spotify updates their rate limits in near future. 
 
-## Orchestration
+## &#x23F2; Orchestration
 This pipeline use Airflow on a Docker container for orchestration. The specific setup can be found in the `docker-compose.yaml` file. It is based on the offical `docker-compose.yaml` file fetched from the Airflow documentation [here](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html). 
 
-## Data Warehouse
+## &#x2601; Data Warehouse
+The project use Google Cloud Storage as data warehouse. Its seamless integration with other GC features and the 90 days trial makes it a great contendor for smaller projects.
 
 ### Data Storage
+The project use two primary databases `raw` and `prep`, a third `prod` database could be used to further transform and model the data for business use. The `raw` database is where data is first loaded into Cloud Storage; the `prep` database is controlled by BigQuery and is for data that is ready for analysis. 
 
-## Transformation
+## &#x21BA; Transformation
 The project use Google Cloud BigQuery for all `prep` transformation. The data modeling follow a star schema, with a *denormalized* "fact" table, rather then *normalized* dimension tables. The star schema supports analytical queries better for it allows the use of running simpler queries because the limited number of joins. It also performs faster aggregations that improve the query performance.  
 
 ![Star schema made in Lucid Chart](https://github.com/blktheta/spotify-image/blob/248b34dee8a0417c64ca91800276bc251f42e272/images/star-schema.png "Denormalized star schema")
@@ -77,53 +80,64 @@ BigQuery natively supports *nested* and *repeated* structures in JSON or AVRO in
 
 Continuing with the above schema the following key things are of note:
 
-* A timestamp in `featured` can have multiple `playlists` and
-* A playlist in `featured` can have multiple `tracks` and
-* A track in `featured` belongs to a single `artist` and
-* A track in `featured` belongs to a single `album` and
-* A track in `featured` belongs to a single `audio-feature`.
+* A timestamp in `featured_track` can have multiple `playlists` and
+* A playlist in `featured_track` can have multiple `tracks` and
+* A track in `featured_track` belongs to a single `artist` and
+* A track in `featured_track` belongs to a single `album` and
+* A track in `featured_track` belongs to a single `audio-feature`.
 
-Putting it all together we arrive at an alternative representation of the initial *denormalized* schema. The schema is represented as followed:
+Putting it all together we arrive at an alternative representation of the initial *denormalized* schema. A shrunked version, for presentation sake, of the above schema is represented as followed:
 
-| feature | region | country | playlist.name | ... | plalylist.track.name | ... | playlist.track.artist.name | ... | playlist.track.album.name | ... | playlist.track.audio.tempo | ... |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2023-05-24 14:00:00 | Europe | Sweden | It's Hits Sweden | ... | Tattoo | ... | Loreen | ... | Tattoo | ... | 120 | ... |
-|  |  |  |  |  | Under någon ny | ... | Miriam Bryant | ... | Under någon ny | ... | xxx | ... |
-|  |  |  | Made in Sweden | ... | Måndagsbarn | ... | Olivia Lobato | ... | Måndagsbarn | ... | xxx | ... |
-|  |  |  |  |  | 5D | ... | Lykke Li | ... | EYEYE | ... | xxx | ... |
-|  |  |  | Ny Pop | ... | Superstar | ... | Bianca Ingrosso | ... | Superstar | ... | xxx | ... |
-| 2023-05-24 14:00:00 | Asia | Korea | Dalkom Cafe | ... | Mirror | ... | Sunday Moon | ... | Mirror | ... | xxx | ... |
-|  |  |  |  |  | Sell My Heart | ... | Junggigo | ... | Sell My Heart | ... | xxx | ... |
-|  |  |  | Best of Korean Soundtracks | ... | Photo of My Mind | ... | Song Ga In | ... | Crash Landing on You | ... | xxx | ... |
-| 2023-05-24 14:00:00 | Africa | Nigeria | Hot Hits Naija | ... | It's Plenty | ... | Burna Boy | ... | Love, Damini | ... | xxx | ... |
+| feature | region | country | playlist.name | plalylist.track.name | playlist.track.artist.name | ... |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2023-05-24 | Europe | Sweden | It's Hits Sweden | Tattoo | Loreen | ... |
+|  |  |  |  |  | Under någon ny | Miriam Bryant | ... |
+|  |  |  | Made in Sweden | Måndagsbarn | Olivia Lobato | Måndagsbarn | ... |
+|  |  |  |  |  | 5D | Lykke Li | ... |
+|  |  |  |  |  | Superstar | Bianca Ingrosso | ... |
+| 2023-05-24 | Asia | Korea | Dalkom Cafe | Mirror | Sunday Moon | ... |
+|  |  |  |  |  | Sell My Heart | Junggigo | ... |
+|  |  |  | Soundtracks | Photo of My Mind | Song Ga In | ... |
+| 2023-05-24 | Africa | Nigeria | Hot Hits Naija | It's Plenty | Burna Boy | ... |
 
-## Vizuallization
+## &#x25D4; Visuallization
+The project use Google Cloud Looker Studio as a data visualization tool. A sample report is appended to the project to showcase the simple usage of the `prep` data. 
 
 # Python Guide
 Sample text.
 
 ## Prerequisites
+Sample text.
 
 ## Variables
+Sample text.
 
 ## Tasks
+Sample text.
 
 # The Result
 Sample text.
 
 ## Case 1
+Sample text.
 
 ## Case 2
+Sample text.
 
 ## Case 3
+Sample text.
 
 ## Case 4
+Sample text.
 
 ## Case 5
+Sample text.
 
 ## Case 6
+Sample text.
 
 ## Spotify Playlists
+Sample text.
 
 # Summary
 Sample text.
