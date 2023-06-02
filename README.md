@@ -4,12 +4,9 @@
 * [Infrastructure](#infrastructure)
   * [The Data Stack](#the-data-stack)
   * [Extrack and Load](#extrack-and-load)
-    * [Data Source](#data-source)
   * [Orchestration](#orchestration)
   * [Data Warehouse](#data-warehouse)
-    * [Data Storage](#data-storage)
   * [Transformation](#transformation)
-    * [Nested and Repeated Structures](#nested-and-repeated-structures)
   * [Visuallization](#visuallization)
 * [Python Guide](#python-guide)
   * [Prerequisites](#prerequisites)
@@ -56,7 +53,6 @@ The project use Terraform to manage cloud resources. The data model is diagramme
 ### Extrack and Load
 The project use custom made pipeline built in `Python 3.10` and orchestrated in `Airflow 2.5.3` run in a `Docker` container. This ELT pipeline requires the owner to be responsible for building, maintaining, or orchestrating the movement of data from the data source into the data warehouse.
 
-#### Data Source
 The RAW data loaded into the data warehouse comes from the [Spotify Web API](https://developer.spotify.com/documentation/web-api). The data runs though an Airflow pipeline and is stored raw in Google Cloud Storage. The *Replication Frequency* (RF) is set to 24h and *Service Level Objective* (SLO) to 3 hours. The numbers may change if Spotify updates their rate limits in near future. 
 
 ### Orchestration
@@ -65,7 +61,6 @@ This pipeline use Airflow on a Docker container for orchestration. The specific 
 ### Data Warehouse
 The project use Google Cloud Storage as data warehouse. Its seamless integration with other GC features and the 90 days trial makes it a great contendor for smaller projects.
 
-#### Data Storage
 The project use two primary databases `raw` and `prep`, a third `prod` database could be used to further transform and model the data for business use. The `raw` database is where data is first loaded into Cloud Storage; the `prep` database is controlled by BigQuery and is for data that is ready for analysis. 
 
 ### Transformation
@@ -73,7 +68,6 @@ The project use Google Cloud BigQuery for all `prep` transformation. The data mo
 
 ![Star schema made in Lucid Chart](https://github.com/blktheta/spotify-image/blob/248b34dee8a0417c64ca91800276bc251f42e272/images/star-schema.png "Denormalized star schema")
 
-#### Nested and Repeated Structures
 BigQuery natively supports *nested* and *repeated* structures in JSON or AVRO input data, records can therefore be expressed more naturally. For more information see the documentation at [Google](https://cloud.google.com/bigquery/docs/nested-repeated). For now the thing to remember is two fold:
 1. BigQuery automatically flattens nested fields when querying.
 2. BigQuery automatically groups data by "row" when querying one or more repeated fiels.
@@ -98,7 +92,6 @@ Putting it all together we arrive at an alternative representation of the initia
 | 2023-05-24 | Asia | Korea | Dalkom Cafe | Mirror | Sunday Moon | ... |
 |  |  |  |  | Sell My Heart | Junggigo | ... |
 |  |  |  | Soundtracks | Photo of My Mind | Song Ga In | ... |
-| 2023-05-24 | Africa | Nigeria | Hot Hits Naija | It's Plenty | Burna Boy | ... |
 
 ### Visuallization
 The project use Google Cloud Looker Studio as a data visualization tool. A sample report is appended to the project to showcase the simple usage of the `prep` data. 
