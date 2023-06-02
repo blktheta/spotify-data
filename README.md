@@ -163,7 +163,7 @@ Variables in need of developer input is documented in the code for easier locali
 
 ## Tasks
 The Project runs a single DAG instance daily and is intitially divided into 4 `upstream` tasks (1 task per region). The `upstream` tasks extract the data from the Spotify Web API, when they finish the following `downstream` tasks complete the dag by loading the data into the cloud. The `downstream` rely on the upstream to complete before loading the data into Cloud Storage and then BigQuery.
-
+![DAG graph made with Lucid Chart](https://github.com/blktheta/spotify-image/blob/925acccfed0f728a93b6ab2613b7fa7721f509ce/images/dag-graph.png "Airflow DAG graph")
 
 # The Result
 Sample text.
