@@ -104,16 +104,66 @@ Putting it all together we arrive at an alternative representation of the initia
 The project use Google Cloud Looker Studio as a data visualization tool. A sample report is appended to the project to showcase the simple usage of the `prep` data. 
 
 # Python Guide
-Sample text.
+The project is written exclusively in Python, except a SQL query, and runs in an isolated Docker container. Make sure to properly edit the values in the code and familiarize yourself with the tools being used.
 
 ## Prerequisites
-Sample text.
+Before you begin editing the code, you should have following technologies installed and working. Links to proper documentation is included. It is recommended to have atleast done the official tutorials before continuing.
+
+| Tool | Resource |
+| --- | --- |
+| Airflow | [Quick Start](https://airflow.apache.org/docs/apache-airflow/stable/start.html) | 
+| Docker | [Get Started](https://docs.docker.com/get-started/) |
+| Google Cloud CLI | [CLI install](https://cloud.google.com/sdk/docs/install) |
+| Google Cloud Auth | [Google Authentication](https://cloud.google.com/docs/authentication) |
+| Terraform | [GCP Get Started](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started) |
+| Spotify | [Web API](https://developer.spotify.com/documentation/web-api)
 
 ## Variables
-Sample text.
+Following snippets showcase some variables needed in order for the DAG to run sucessfully.
+```
+# Google
+GOOGLE_APPLICATION_CREDENTIALS="/path/to/google/credentials/json"
+...
+
+# Spotify
+SPOTIFY_AF_ID="your-app-client-id"
+SPOTIFY_AF_SECRET="your-app-client-secret"
+...
+```
+The `.env` requires access to your GCP credentials and Spotify Apps ID and key. The GC credntials allow for access into cloud applications from a and lets you call Client libraries such as `Cloud Storage` and `BigQuery`. An example snippet showcased below.
+
+```
+import pandas as pd
+from google.cloud import storage
+
+def load_to_storage(df: pd.DataFrame, country: str, date: str) -> None:
+    """
+    Uploads a parquet file to GCS bucket.
+    """
+    # Construct a Storage client object.
+    client = storage.Client()
+    
+    # TODO(developer): set bucket_name to the ID of your GCS bucket.
+    # bucket_name = "your-bucket-name"
+
+    # TODO(developer): set the destination_blob to the ID of your GCS object.
+    # destination_blob = "storage-object-name"
+
+    bucket = client.bucket(bucket_name)
+    bucket.blob(destination_blob).upload_from_string(
+        df.to_parquet(index=False), content_type=None
+    )
+
+    print(
+        f"File {country}-{date}.parquet uploaded to Bucket {bucket_name}/featured/{date}"
+    )
+    return
+```
+Variables in need of developer input is documented in the code for easier localization, but also a reminder.
 
 ## Tasks
-Sample text.
+The Project runs a single DAG instance daily and is intitially divided into 4 `upstream` tasks (1 task per region). The `upstream` tasks extract the data from the Spotify Web API, when they finish the following `downstream` tasks complete the dag by loading the data into the cloud. The `downstream` rely on the upstream to complete before loading the data into Cloud Storage and then BigQuery.
+
 
 # The Result
 Sample text.
