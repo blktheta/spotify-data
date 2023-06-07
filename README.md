@@ -180,7 +180,8 @@ Sample text.
 
 ## Spotify Playlists
 Link to the Top 100 Featured tracks, inbetween 20230524 - 20230530.
-[Click here to open the playlist in a new window]([https://tinyurl.com/top100featured](https://open.spotify.com/playlist/7sV5on10eXq4GCOfFfqLlD?si=eb3db9a9b5d14170&nd=1)
+
+[Click here to open the playlist in a new window](https://open.spotify.com/playlist/7sV5on10eXq4GCOfFfqLlD?si=eb3db9a9b5d14170&nd=1)
 
 # Summary
 Sample text.
