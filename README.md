@@ -13,13 +13,13 @@
   * [Variables](#variables)
   * [Tasks](#tasks)
 * [The Result](#the-result)
-  * [Spotify Playlists](#spotify-playlists)
-* [Summary](#summary)
+  * [Spotify Playlist](#spotify-playlist)
   * [Future Revisions](#future-revisions)
+ * [Endnote](#endnote)
 
 | NOTE: This is a Proof of Concept Documentation |
 | :--- | 
-| This project is meant for cloud development. It acts as a proof of concept for what can be done with the Spotify Web API. The configuration supports basic configuration using environment variables or an .env file. Feel free to modify this project to suit your needs. |
+| This project is meant for cloud development. It acts as a proof of concept for what can be done with the Spotify Web API. The configuration supports basic configuration using environment variables or an .env file. Feel free to modify this project to suit your needs. All infographics were made by and belong to BlkTheta. |
 
 ## Purpose
 The goal of this project is to highlight the songs that Spotify recommend in their official playlists and what character said songs possess. The data will help upcoming artist understand the Spotify market audience and better target their efforts. This project also conceptually describes on high level the componenents which all together are defined as an ELT data pipeline.  
@@ -152,25 +152,28 @@ The Project runs a single DAG instance daily and is intitially divided into 4 `u
 ![DAG graph made with Lucid Chart](https://github.com/blktheta/spotify-image/blob/925acccfed0f728a93b6ab2613b7fa7721f509ce/images/dag-graph.png "Airflow DAG graph")
 
 # The Result
-Sample text.
-
+The following infographics briefly reports on the data extracted hourly from the Spotify Web API, between 20230524 to 20230540. The report does not go indepth, it only functions to provide a shallow overview and at the same time showcase the data's potential if further analytic actions is taken. All graphics were made and are owned by BlkTheta. 
 ![Spotify infographic made with Canva](https://github.com/blktheta/spotify-image/blob/15ea4176a3c5285950b64a08309a3afe7a25fd9b/images/case1.png "Spotify Study infographic")
-
 ![Spotify infographic made with Canva](https://github.com/blktheta/spotify-image/blob/15ea4176a3c5285950b64a08309a3afe7a25fd9b/images/case2.png "Spotify Study infographic")
-
 ![Spotify infographic made with Canva](https://github.com/blktheta/spotify-image/blob/15ea4176a3c5285950b64a08309a3afe7a25fd9b/images/case3.png "Spotify Study infographic")
-
 ![Spotify infographic made with Canva](https://github.com/blktheta/spotify-image/blob/15ea4176a3c5285950b64a08309a3afe7a25fd9b/images/case4.png "Spotify Study infographic")
-
 ![Spotify infographic made with Canva](https://github.com/blktheta/spotify-image/blob/15ea4176a3c5285950b64a08309a3afe7a25fd9b/images/case5.png "Spotify Study infographic")
-
 ![Spotify infographic made with Canva](https://github.com/blktheta/spotify-image/blob/15ea4176a3c5285950b64a08309a3afe7a25fd9b/images/case6.png "Spotify Study infographic")
 
 ## Spotify Playlist
-[Link to the Top 100 Featured tracks, inbetween 20230524 - 20230530.](https://open.spotify.com/playlist/7sV5on10eXq4GCOfFfqLlD?si=eb3db9a9b5d14170&nd=1)
-
-# Summary
-Sample text.
+[Link to the Top 100 Featured tracks, between 20230524 to 20230530.](https://open.spotify.com/playlist/7sV5on10eXq4GCOfFfqLlD?si=eb3db9a9b5d14170&nd=1)
 
 ## Future Revisions
-Extended Scope.
+Further improvements may be incorporated, below is a list of extended functionality that were made apperent from creating the project, but have yet been applied due to the scope. 
+
+| Scope | Improvement | Action |
+| :--- | :--- | :--- |
+| API | Rotate Spotify App IDs based on API calls | Switch App IDs after 10k calls to the API |
+| API | Do not divide the API calls by region | Use library of choice to map the regions to their country |
+| Transformation | Use PySpark Dataframes | Use PySpark to transform and batch Dataframes to parquet |
+| Data | Linear growth analysis | Run DAG for longer periods of time |
+| Data | Regression analysis between artists and playlists | Make API calls based on artist ID and store it |
+| Tools | Replace airflow | Swith to modern tools Prefect or Mage |
+
+# Endnote
+Thank you for stopping by, if you have any questions or concerns feel free to reach out!
