@@ -161,25 +161,26 @@ The Project runs a single DAG instance daily and is intitially divided into 4 `u
 Sample text.
 
 ## Case 1
-Sample text.
+![Spotify infographic made with Canva](https://github.com/blktheta/spotify-image/blob/15ea4176a3c5285950b64a08309a3afe7a25fd9b/images/case1.png "Spotify Study infographic")
 
 ## Case 2
-Sample text.
+![Spotify infographic made with Canva](https://github.com/blktheta/spotify-image/blob/15ea4176a3c5285950b64a08309a3afe7a25fd9b/images/case2.png "Spotify Study infographic")
 
 ## Case 3
-Sample text.
+![Spotify infographic made with Canva](https://github.com/blktheta/spotify-image/blob/15ea4176a3c5285950b64a08309a3afe7a25fd9b/images/case3.png "Spotify Study infographic")
 
 ## Case 4
-Sample text.
+![Spotify infographic made with Canva](https://github.com/blktheta/spotify-image/blob/15ea4176a3c5285950b64a08309a3afe7a25fd9b/images/case4.png "Spotify Study infographic")
 
 ## Case 5
-Sample text.
+![Spotify infographic made with Canva](https://github.com/blktheta/spotify-image/blob/15ea4176a3c5285950b64a08309a3afe7a25fd9b/images/case5.png "Spotify Study infographic")
 
 ## Case 6
-Sample text.
+![Spotify infographic made with Canva](https://github.com/blktheta/spotify-image/blob/15ea4176a3c5285950b64a08309a3afe7a25fd9b/images/case6.png "Spotify Study infographic")
 
 ## Spotify Playlists
-Sample text.
+Link to the Top 100 Featured tracks, inbetween 20230524 - 20230530.
+[Click here to open the playlist in a new window]([https://tinyurl.com/top100featured](https://open.spotify.com/playlist/7sV5on10eXq4GCOfFfqLlD?si=eb3db9a9b5d14170&nd=1)
 
 # Summary
 Sample text.
