@@ -25,29 +25,28 @@
 The goal of this project is to highlight the songs that Spotify recommend in their official playlists and what character said songs possess. The data will help upcoming artist understand the Spotify market audience and better target their efforts. This project also conceptually describes on high level the componenents which all together are defined as an ELT data pipeline.  
 
 ## Scope
-The project is limited to a weeks worth of data (~30 million rows of data) for brevity. The DAG however should return ~1.5 billion rows of data annually. This document is limited to describe the pipeline conceptually, as there are other resources that describe it in more detail.
+The project is limited to a weeks worth of data (~30 million rows of data) for brevity. The DAG however should return ~1.5 billion rows of data annually. This document is limited to describing the pipeline conceptually, as there are other resources that describe it in more detail.
 
 ## Infrastructure
 ### The Data Stack
 ![Data stack made in Canva](https://github.com/blktheta/spotify-image/blob/1aa20965f2e2fd54cbc9b05d2f72e2b22e545cb7/images/data-stack.png "ELT data stack")
 
-The project use Terraform to manage cloud resources. The data model is diagrammed in Lucid Chart and the dashboard in Looker Studio. The extraction, loading and transformation part of the stack is all overseen by Ariflow. 
+The project use Terraform to manage cloud resources. The extraction, loading and transformation part of the stack is all overseen by Ariflow. The data model is diagrammed in Lucid Chart, the dashboard in Looker Studio and the report in Canva.
 
 | Stage | Tools |
 | :--- | :---: |
 | Infrastructure | Terraform |
-| Diagramming | Lucid Chart & Canva |
+| Orchestration | Airflow & Docker |
 | Extraction | Python Code |
 | Loading | Python Code |
-| Orchestration | Airflow & Docker |
-| Data Warehouse | Google Cloud Storage |
-| Transformations | Google Cloud BigQuery |
-| Data Visualization | Google Cloud Looker |
+| Warehouse | Google Cloud Storage |
+| Transformation | Google Cloud BigQuery |
+| Visualization | Looker, Lucid Chart & Canva |
 
 ### Extrack and Load
-The project use custom made pipeline built in `Python 3.10` and orchestrated in `Airflow 2.5.3` run in a `Docker` container. This ELT pipeline requires the owner to be responsible for building, maintaining, or orchestrating the movement of data from the data source into the data warehouse.
+The project use custom made code built in `Python 3.10` and orchestrated in `Airflow 2.5.3`, run in a `Docker` container. This ELT pipeline requires the owner to be responsible for building, maintaining, or orchestrating the movement of data from the data source into the data warehouse.
 
-The RAW data loaded into the data warehouse comes from the [Spotify Web API](https://developer.spotify.com/documentation/web-api). The data runs though an Airflow pipeline and is stored raw in Google Cloud Storage. The *Replication Frequency* (RF) is set to 24h and *Service Level Objective* (SLO) to 3 hours. The numbers may change if Spotify updates their rate limits in near future. 
+The RAW data loaded into the data warehouse comes from the [Spotify Web API](https://developer.spotify.com/documentation/web-api). The data runs though the Airflow pipeline and is stored raw in Google Cloud Storage. The *Replication Frequency* (RF) is set to 24h and *Service Level Objective* (SLO) to 3 hours. The numbers may change if Spotify updates their rate limits in near future. 
 
 ### Orchestration
 This pipeline use Airflow on a Docker container for orchestration. The specific setup can be found in the `docker-compose.yaml` file. It is based on the offical `docker-compose.yaml` file fetched from the Airflow documentation [here](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html). 
@@ -88,7 +87,7 @@ Putting it all together we arrive at an alternative representation of the initia
 |  |  |  | Soundtracks | Photo of My Mind | Song Ga In | ... |
 
 ### Visuallization
-The project use Google Cloud Looker Studio as a data visualization tool. A sample report is appended to the project to showcase the simple usage of the `prep` data. 
+The project use Google Looker Studio as a data visualization tool. A sample report made in Canva is appended to the project to showcase the simple usage of the `prep` data. 
 
 ## Python Guide
 The project is written exclusively in Python, except a SQL query, and runs in an isolated Docker container. Make sure to properly edit the values in the code and familiarize yourself with the tools being used.
@@ -117,7 +116,7 @@ SPOTIFY_AF_ID="your-app-client-id"
 SPOTIFY_AF_SECRET="your-app-client-secret"
 ...
 ```
-The `.env` requires access to your GCP credentials and Spotify Apps ID and key. The Google Cloud credntials allow for access into cloud applications and lets you call client libraries such as `Cloud Storage` and `BigQuery`. While the Sptofy App IDs and keys allows for requesting an access token in order to establish a server-to-server connection with Spotify's API. An example snippet of using the `Cloud Storage` client is showcased below. Variables in need of developer input is documented in the code for easier localization.
+The `.env` requires access to your GCP credentials and Spotify Apps ID and key. The Google Cloud credntials allow for access into cloud applications and lets you call client libraries such as `Cloud Storage` and `BigQuery`. While the Spotify App IDs and keys allow for requesting access tokens in order to establish a server-to-server connection with Spotify's API. An example snippet of using the `Cloud Storage` client is showcased below. Variables in need of developer input is documented in the code for easier localization.
 
 ```python
 import pandas as pd
@@ -152,7 +151,7 @@ The Project runs a single DAG instance daily and is intitially divided into 4 `u
 ![DAG graph made with Lucid Chart](https://github.com/blktheta/spotify-image/blob/925acccfed0f728a93b6ab2613b7fa7721f509ce/images/dag-graph.png "Airflow DAG graph")
 
 # The Result
-The following infographics briefly reports on the data extracted hourly from the Spotify Web API, between 20230524 to 20230540. The report does not go indepth, it only functions to provide a shallow overview and at the same time showcase the data's potential if further analytic actions is taken. All graphics were made and are owned by BlkTheta. 
+The following infographics briefly reports on the data extracted hourly from the Spotify Web API, between 20230524 to 20230540. The report does not go in depth, it only functions to provide a shallow overview and at the same time showcase the data's potential if further analytic actions is taken. All graphics were made and are owned by BlkTheta. 
 ![Spotify infographic made with Canva](https://github.com/blktheta/spotify-image/blob/15ea4176a3c5285950b64a08309a3afe7a25fd9b/images/case1.png "Spotify Study infographic")
 ![Spotify infographic made with Canva](https://github.com/blktheta/spotify-image/blob/15ea4176a3c5285950b64a08309a3afe7a25fd9b/images/case2.png "Spotify Study infographic")
 ![Spotify infographic made with Canva](https://github.com/blktheta/spotify-image/blob/15ea4176a3c5285950b64a08309a3afe7a25fd9b/images/case3.png "Spotify Study infographic")
@@ -173,7 +172,7 @@ Further improvements may be incorporated, below is a list of extended functional
 | Transformation | Use PySpark Dataframes | Use PySpark to transform and batch Dataframes to parquet |
 | Data | Linear growth analysis | Run DAG for longer periods of time |
 | Data | Regression analysis between artists and playlists | Make API calls based on artist ID and store it |
-| Tools | Replace airflow | Swith to modern tools Prefect or Mage |
+| Tools | Replace airflow | Swith to modern tools like Prefect, Dagster or Mage |
 
 # Endnote
 Thank you for stopping by, if you have any questions or concerns feel free to reach out!
